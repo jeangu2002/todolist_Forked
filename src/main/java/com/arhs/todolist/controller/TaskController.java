@@ -1,6 +1,8 @@
 package com.arhs.todolist.controller;
 
+import com.arhs.todolist.exception.NotFoundException;
 import com.arhs.todolist.models.Task;
+import com.arhs.todolist.models.User;
 import com.arhs.todolist.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +22,29 @@ public class TaskController {
     private List<Task> listTasks(){
         return taskService.listTasks();
     }
-    @PostMapping("/create-task")
-    private ResponseEntity<Task> createTasks(@RequestBody Task task){
-        Task createdTask = taskService.createTask(task);
+    @PostMapping("/save-task")
+    private ResponseEntity<Task> saveTask(@RequestBody Task task){
+        Task createdTask = taskService.saveTask(task);
         return ResponseEntity.ok(createdTask);
     }
-    @PutMapping("/update/{taskId}")
-    public ResponseEntity<?> updateTask(@PathVariable int taskId, @RequestBody Task task) {
-        Optional<Task> updatedTask = taskService.updateTask(taskId, task);
-        return updatedTask.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+
     @DeleteMapping("/delete/{taskId}")
     public ResponseEntity<?> deleteTask(@PathVariable int taskId) {
-        try {
             taskService.deleteTask(taskId);
+            //throw new RuntimeException();
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            // Handle exceptions, like when the task doesn't exist
-            return ResponseEntity.notFound().build();
+
+    }
+    @PostMapping("/select-task/{taskId}")
+    private ResponseEntity<Task> selectTask(@PathVariable int taskId){
+        Optional<Task> selectedTask = taskService.selectTask(taskId);
+        if (selectedTask.isPresent()){
+            return ResponseEntity.ok(selectedTask.get());
+        }else {
+            throw new NotFoundException("La tache n'existe pas");
         }
     }
+
+
+
 }

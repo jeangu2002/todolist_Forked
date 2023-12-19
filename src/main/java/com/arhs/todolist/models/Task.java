@@ -16,14 +16,18 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
-    int taskId;
+    private Integer taskId;
 
     @Column(name = "title")
-    String title;
+    private String title;
 
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Column(name = "status")
-    Boolean completed;
+    private Boolean completed;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
